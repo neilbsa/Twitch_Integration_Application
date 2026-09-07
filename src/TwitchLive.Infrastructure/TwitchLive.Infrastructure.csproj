@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+   <ItemGroup>
+    <PackageReference Include="TwitchLib" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="../TwitchLive.Application/TwitchLive.Application.csproj" />
+  </ItemGroup>
+</Project>

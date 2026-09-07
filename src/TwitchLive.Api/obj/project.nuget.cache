@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "Jkg7Q+5xPVU=",
+  "success": true,
+  "projectFilePath": "/home/neil-bryan/Documents/TRAININGS/dotnet/Twitch_Application/src/TwitchLive.Api/TwitchLive.Api.csproj",
+  "expectedPackageFiles": [
+    "/home/neil-bryan/.nuget/packages/microsoft.aspnetcore.openapi/10.0.11/microsoft.aspnetcore.openapi.10.0.11.nupkg.sha512",
+    "/home/neil-bryan/.nuget/packages/microsoft.openapi/2.7.5/microsoft.openapi.2.7.5.nupkg.sha512"
+  ],
+  "logs": []
+}
