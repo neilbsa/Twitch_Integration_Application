@@ -1,11 +1,10 @@
-using TwitchLive.Infrastructure.TwitchOption;
 using TwitchLive.Infrastructure.TwitchOption.TwitchApiImplementations.RateLimit;
 
+namespace TwitchLive.Infrastructure.TwitchManagerSettings;
 
-namespace TwitchLive.Infrastructure.TwitchOption;
-
-public sealed class TwitchOptions
+public class TwitchOptions
 {
+    public const string SectionName = "Twitch";
     public string Username { get; set; } = string.Empty;
     public string OAuthToken { get; set; } = string.Empty;
     public string Channel { get; set; } = string.Empty;

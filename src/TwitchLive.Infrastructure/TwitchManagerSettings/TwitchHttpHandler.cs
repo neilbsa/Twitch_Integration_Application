@@ -6,11 +6,11 @@ using TwitchLib.Api.Core.Interfaces;
 
 namespace TwitchLive.Infrastructure.TwitchOption.TwitchApiImplementations.HttpHandlers;
 
-public sealed class TwitchHttpHandler : IHttpCallHandler
+public sealed class TwitchCustomHttpHandler : IHttpCallHandler
 {
     private readonly HttpClient _httpClient;
 
-    public TwitchHttpHandler(
+    public TwitchCustomHttpHandler(
         HttpClient? httpClient = null)
     {
 

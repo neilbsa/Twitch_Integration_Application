@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using TwitchLib.Api.Core.Interfaces;
+using TwitchLive.Infrastructure.TwitchManagerSettings;
 
 namespace TwitchLive.Infrastructure.TwitchOption.TwitchApiImplementations.RateLimit;
 public class TwitchRateLimit : IRateLimiter
