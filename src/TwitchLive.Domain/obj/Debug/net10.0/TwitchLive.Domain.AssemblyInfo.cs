@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TwitchLive.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+475e24ac9f5e94608e1a35f1688d3d25d2ab1377")]
 [assembly: System.Reflection.AssemblyProductAttribute("TwitchLive.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TwitchLive.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
