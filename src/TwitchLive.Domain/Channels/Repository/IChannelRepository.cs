@@ -8,7 +8,7 @@ public interface IChannelRepository
     Task<Channel?> GetChannelById(Guid id);
      Task <Channel?> GetChannelByTwitchLogin(UserTwitchLogin login);
     Task <Channel?> GetChannelByTwitchId(UserTwitchId id);
-    Task<List<Channel>> GetAllMonitoredChannelAsync();
+    Task<IReadOnlyList<Channel>> GetAllMonitoredChannelAsync();
     Task<bool> ChannelExistsAsync(UserTwitchLogin channelLogin);
 
 }

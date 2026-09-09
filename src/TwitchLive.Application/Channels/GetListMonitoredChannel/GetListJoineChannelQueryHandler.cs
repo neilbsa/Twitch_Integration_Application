@@ -17,7 +17,7 @@ public sealed class GetListMonitoredChannelQueryHandler
     {
         var list = await 
             _repository.GetAllMonitoredChannelAsync();
-        return Result.Success<List<Channel>>(list);
+        return Result.Success<List<Channel>>(list.ToList());
     }
 }
 

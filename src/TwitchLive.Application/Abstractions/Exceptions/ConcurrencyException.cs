@@ -1,7 +1,8 @@
 namespace TwitchLive.Application.Abstractions.Exceptions;
-public sealed class ChannelExceptions : Exception
+
+public sealed class ConcurrencyException : Exception
 {
-    public ChannelExceptions(
+    public ConcurrencyException(
         string Message,
         Exception? innerException) : base(Message,innerException)
     {

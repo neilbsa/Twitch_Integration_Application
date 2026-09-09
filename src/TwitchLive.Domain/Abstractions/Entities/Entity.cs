@@ -13,7 +13,7 @@ public class Entity : IEntity
 
     public IReadOnlyList<IDomainEvent> GetDomainEvents() => _domainEvents;
     public void RaiseDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent); 
-    public void ClearDomainEvent () => _domainEvents.Clear();
+    public void ClearDomainEvents() => _domainEvents.Clear();
 
 }
 

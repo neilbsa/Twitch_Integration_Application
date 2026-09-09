@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -27,8 +28,7 @@ public static class TwitchLibDependencyInjections
              services.AddOptions<TwitchOptions>()
                     .Validate(options => !string.IsNullOrEmpty(options.ClientId), 
                         "ClientId is required")
-                    .Validate(options => !string.IsNullOrEmpty(options.AccessToken), 
-                        "AccessToken is required")
+                
                     .Validate(options => !string.IsNullOrEmpty(options.Username), 
                         "BotUsername is required")
                     .Validate(options => !string.IsNullOrEmpty(options.Channel), 
@@ -43,10 +43,10 @@ public static class TwitchLibDependencyInjections
         {
             var options = sp.GetRequiredService<IOptions<TwitchOptions>>().Value;
             var client = new TwitchClient();
-            var connectionCredential = new ConnectionCredentials(options.Username,options.AccessToken);
+            var connectionCredential = new ConnectionCredentials(options.Username,options.OAuthToken);
             client.Initialize(connectionCredential,options.Channel);    
-            client.Connect();
-           return client;
+         
+            return client;
         });
 
         services.AddSingleton<TwitchAPI>(sp =>
@@ -63,15 +63,15 @@ public static class TwitchLibDependencyInjections
             var apiSettings = new ApiSettings()
             {
                 
-                     ClientId = options.ClientId,
-                      AccessToken= options.AccessToken,
+                ClientId = options.ClientId,
+                AccessToken= options.OAuthToken,
 
             };
-
             var client = new TwitchAPI(logger,limiter,apiSettings,httpHandler);
            return client;
         });
-
+        services.AddSingleton<TwitchClientService>();
+        services.AddHostedService<TwitchClientHostedService>();
         return services;
 
     }
