@@ -9,6 +9,7 @@ using TwitchLib.Api.Core.Interfaces;
 using TwitchLib.Api.Core.Internal;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
+using TwitchLive.Infrastructure.TwitchManagerSettings.Services;
 using TwitchLive.Infrastructure.TwitchOption.TwitchApiImplementations.HttpHandlers;
 using TwitchLive.Infrastructure.TwitchOption.TwitchApiImplementations.RateLimit;
 
@@ -62,16 +63,21 @@ public static class TwitchLibDependencyInjections
             });
             var apiSettings = new ApiSettings()
             {
-                
+            
                 ClientId = options.ClientId,
-                AccessToken= options.OAuthToken,
+                AccessToken= options.AccessToken,
 
             };
             var client = new TwitchAPI(logger,limiter,apiSettings,httpHandler);
            return client;
         });
+
+
+
+
         services.AddSingleton<TwitchClientService>();
         services.AddHostedService<TwitchClientHostedService>();
+        
         return services;
 
     }

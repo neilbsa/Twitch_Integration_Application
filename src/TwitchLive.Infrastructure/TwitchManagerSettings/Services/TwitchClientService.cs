@@ -1,11 +1,14 @@
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Logging;
 using TwitchLib.Api;
+using TwitchLib.Api.Services;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
+using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
-using TwitchLive.Domain.Channels.Repository;
 
-namespace TwitchLive.Infrastructure.TwitchManagerSettings;
+
+namespace TwitchLive.Infrastructure.TwitchManagerSettings.Services;
 
 
 
@@ -13,53 +16,113 @@ public sealed class TwitchClientService
 {
     private readonly TwitchClient _client;
     private readonly ILogger<TwitchClientService> _logger;
+    private readonly TwitchAPI _twitchApi ;
 
- 
-    public TwitchClientService(TwitchClient client, ILogger<TwitchClientService> logger)
+    public TwitchClientService(TwitchClient client, ILogger<TwitchClientService> logger, TwitchAPI twitchApi)
     {
-         
+
         _client = client;
         _logger = logger;
-    _logger.LogInformation(
-        "TwitchClientService created. IsConnected={IsConnected}",
-        _client.IsConnected);
-        RegisterHandlers();
 
+        RegisterHandlers();
+        _twitchApi = twitchApi;
     }
 
     private void RegisterHandlers()
     {
-             _logger.LogInformation("Registering Twitch handlers...");
+    _logger.LogInformation("Registering Twitch handlers...");
 
+  
     _client.OnConnected += ClientConnected;
     _client.OnDisconnected += ClientDisconnected;
     _client.OnConnectionError += ClientconnectionError;
     _client.OnReconnected += ClientReconnected;
-_client.OnLog += OnLogged;
+    _client.OnIncorrectLogin += IncorrectLogin;
+
+
+
+
+
     _client.OnMessageReceived += MessageReceived;
     _client.OnMessageSent += MessageSent;
+
+    _client.OnLeftChannel += OnLeftChannel;
+    _client.OnJoinedChannel += OnJoinChannel;
+  
 
     _client.OnChatCommandReceived += CommandRecieved;
     _client.OnNewSubscriber += NewSubscriber;
 
+
     _client.OnUserJoined += UserJoined;
     _client.OnUserLeft += UserLeft;
-_client.OnIncorrectLogin += IncorrectLogin;
+ 
+
+
+    _client.OnModeratorJoined += ModeratorJoined;
+    _client.OnModeratorLeft += ModeratorLeft;
+    _client.OnBanned += OnBanned;
+    _client.OnUserBanned += OnUserBaned;
+
+
+
     _logger.LogInformation("Twitch handlers registered.");
+
+
+
     
     }
-private void IncorrectLogin(object? sender, OnIncorrectLoginArgs e)
-{
+
+    private void OnLeftChannel(object? sender, OnLeftChannelArgs e)
+    {
+         var channel = e.Channel;
+          var botUserName = e.BotUsername;
+          _logger.LogInformation($"botUserName {botUserName} left the channel { channel}");
+    }
+
+    private void OnJoinChannel(object? sender, OnJoinedChannelArgs e)
+    {
+         var channel = e.Channel;
+         var botUserName = e.BotUsername;
+          _logger.LogInformation($"botUserName {botUserName} joined the channel { channel}");
+    }
+
+    private void ModeratorJoined(object? sender, OnModeratorJoinedArgs e)
+    {
+
+        var moderatorName = e.Username;
+        var channel = e.Channel;
+       _logger.LogInformation($"Moderator {moderatorName} joined the channel { channel}");
+    }
+
+    private void ModeratorLeft(object? sender, OnModeratorLeftArgs e)
+    {
+            var moderatorName = e.Username;
+        var channel = e.Channel;
+       _logger.LogInformation($"Moderator {moderatorName} left the channel { channel}");
+    }
+
+    private void OnBanned(object? sender, OnBannedArgs e)
+    {
+     var message = e.Message;
+        var channel = e.Channel;
+       _logger.LogInformation($"channel {channel} banned with message  { message}");
+    }
+
+    private void OnUserBaned(object? sender, OnUserBannedArgs e)
+    {
+         var userBanned = e.UserBan;
+        
+       _logger.LogInformation($"user {userBanned} was banned");
+    }
+
+    private void IncorrectLogin(object? sender, OnIncorrectLoginArgs e)
+    {
     _logger.LogError(
         "TWITCH INCORRECT LOGIN: {Username}",
         e.Exception);
-}
-    private void OnLogged(object? sender, OnLogArgs e)
-    {
-          _logger.LogInformation(
-        "TWITCH RAW: {Data}",
-        e.Data);
     }
+
 
     public void Connect()
     {
@@ -67,17 +130,17 @@ private void IncorrectLogin(object? sender, OnIncorrectLoginArgs e)
         "Connect() called. IsConnected = {IsConnected}",
         _client.IsConnected);
 
-    if (!_client.IsConnected)
-    {
-        _logger.LogInformation(
-            "Calling TwitchClient.Connect()...");
+            if (!_client.IsConnected)
+            {
+                _logger.LogInformation(
+                    "Calling TwitchClient.Connect()...");
 
-        _client.Connect();
+                _client.Connect();
 
-        _logger.LogInformation(
-            "TwitchClient.Connect() returned. IsConnected = {IsConnected}",
-            _client.IsConnected);
-    }
+                _logger.LogInformation(
+                    "TwitchClient.Connect() returned. IsConnected = {IsConnected}",
+                    _client.IsConnected);
+            }
     }
 
     public void Disconnect()
@@ -168,5 +231,8 @@ private void IncorrectLogin(object? sender, OnIncorrectLoginArgs e)
     private void ClientConnected(object? sender, OnConnectedArgs e)
     {
          _logger.LogInformation($"client connected!");
+   
+
+       
     }
 }
