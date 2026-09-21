@@ -4,7 +4,7 @@ using TwitchLib.Api.Core;
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Core.Interfaces;
 
-namespace TwitchLive.Infrastructure.TwitchOption.TwitchApiImplementations.HttpHandlers;
+namespace TwitchLive.Infrastructure.TwitchManagerSettings.TwitchApi.Configurations;
 
 public sealed class TwitchCustomHttpHandler : IHttpCallHandler
 {

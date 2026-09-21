@@ -1,5 +1,6 @@
 using TwitchLib.Api;
 using TwitchLib.Client;
+using TwitchLib.EventSub.Core.Models;
 using TwitchLive.Domain.Channels;
 using TwitchLive.Domain.Channels.Properties;
 using TwitchLive.Domain.TwitchManager;
@@ -11,13 +12,12 @@ public sealed class TwitchManager : ITwitchManager
 {
 
     private readonly TwitchAPI _twitchApi;
-    private readonly TwitchClient _twitchClient;
+    private readonly TwitchClient _client;
 
-    public TwitchManager(TwitchAPI twitchApi, TwitchClient twitchClient)
+    public TwitchManager(TwitchAPI twitchApi, TwitchClient client)
     {
         _twitchApi = twitchApi;
-        _twitchClient = twitchClient;
-    
+        _client = client;
     }
 
     public Task AddChannelToMonitor(UserTwitchLogin ch)
@@ -25,9 +25,33 @@ public sealed class TwitchManager : ITwitchManager
         throw new NotImplementedException();
     }
 
-    public Task<Channel?> GetChannelDetailsByLoginAsync(UserTwitchLogin login)
+
+
+
+    public async Task<Channel?> GetChannelDetailsByLoginAsync(UserTwitchLogin login)
     {
-        throw new NotImplementedException();
+       var response = await _twitchApi.Helix.Users.GetUsersAsync(logins: new List<string>(){ login.Value });
+       var user =  response.Users?.FirstOrDefault();
+        if(user == null)
+        {
+            return default;
+        }
+        var channel = Channel.Create(
+                new UserTwitchId(user.Id),
+                new UserTwitchLogin(user.Login),
+                new UserTwitchDisplayName(user.DisplayName),
+                DateTime.UtcNow,
+                new UserTwitchType(user.Type),
+                new UserTwitchBroadcasterType(user.BroadcasterType),
+                new UserTwitchDescription(user.Description),
+                new UserTwitchProfileImageUrl(user.ProfileImageUrl),
+                new UserTwitchOfflineImageUrl(user.OfflineImageUrl),
+                0,new UserTwitchEmail(user.Email),
+                ChannelStatus.Unknown,false);
+
+
+        return channel;
+
     }
 
     public Task<List<Channel>> GetJoinedChannelsAsync()
@@ -42,12 +66,13 @@ public sealed class TwitchManager : ITwitchManager
 
     public void JoinChannel(string ch)
     {
-        throw new NotImplementedException();
+       _client.JoinChannel(ch,true);
     }
 
-    public Task LeaveChannelAsync(UserTwitchLogin login)
+    public void LeaveChannelAsync(UserTwitchLogin login)
     {
-        throw new NotImplementedException();
+       _client.LeaveChannel(login.Value);
+
     }
 
     public Task SendChatToChannel(UserTwitchId id, string Message)

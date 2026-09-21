@@ -2,12 +2,12 @@ using Microsoft.Extensions.Options;
 using TwitchLib.Api.Core.Interfaces;
 using TwitchLive.Infrastructure.TwitchManagerSettings;
 
-namespace TwitchLive.Infrastructure.TwitchOption.TwitchApiImplementations.RateLimit;
+namespace TwitchLive.Infrastructure.TwitchManagerSettings.TwitchApi.Configurations;
 public class TwitchRateLimit : IRateLimiter
 {
     private readonly int MaxRequests = 500;
 
-    private readonly TimeSpan _interval = TimeSpan.FromMinutes(5);
+    private readonly TimeSpan _interval = TimeSpan.FromMinutes(.4);
 
     private readonly SemaphoreSlim _lock = new(1, 1);
 
@@ -19,7 +19,6 @@ public class TwitchRateLimit : IRateLimiter
         MaxRequests = rateLimitOptions.MaxRequests;
         _interval = rateLimitOptions.Interval;
     }
-
     public async Task Perform(
         Func<Task> perform,
         CancellationToken cancellationToken)

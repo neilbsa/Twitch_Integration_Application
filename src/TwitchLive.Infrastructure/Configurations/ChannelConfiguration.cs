@@ -30,11 +30,13 @@ public sealed class ChannelConfiguration : IEntityTypeConfiguration<Channel>
             builder.Property(z=>z.OfflineImageUrl)
                     .HasConversion(z=>z.Value, value => new UserTwitchOfflineImageUrl(value));
             builder.Property(z=>z.Email)
-                    .HasConversion(z=>z.Value, value => new UserTwitchEmail(value));
+                    .HasConversion(z=>z.Value, value => new UserTwitchEmail(value)).IsRequired(false);
             builder.Property(z=>z.ProfileImageUrl)
                     .HasConversion(z=>z.Value, value => new UserTwitchProfileImageUrl(value));
         
-            builder.HasIndex(z=>z.Login);
+            builder.HasIndex(z=>z.Login);       
+            builder.Property(z=>z.Version).HasDefaultValue(1) .IsConcurrencyToken()
+    .IsRequired();
             builder.HasIndex(z=>z.UserTwitchId);
     }
 }

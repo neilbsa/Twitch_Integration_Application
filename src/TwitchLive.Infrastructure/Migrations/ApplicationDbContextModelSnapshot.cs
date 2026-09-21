@@ -15,7 +15,7 @@ namespace TwitchLive.Infrastructure.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
 
             modelBuilder.Entity("TwitchLive.Domain.Channels.Channel", b =>
                 {
@@ -39,8 +39,10 @@ namespace TwitchLive.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsModerated")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("JoinStatus")
                         .HasColumnType("INTEGER");
@@ -68,6 +70,12 @@ namespace TwitchLive.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1);
+
                     b.Property<long>("ViewCount")
                         .HasColumnType("INTEGER");
 
@@ -78,6 +86,47 @@ namespace TwitchLive.Infrastructure.Migrations
                     b.HasIndex("UserTwitchId");
 
                     b.ToTable("channels", (string)null);
+                });
+
+            modelBuilder.Entity("TwitchLive.Domain.Followers.Follower", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("FollowedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FromLogin")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FromUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FromUserName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Recognition")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ToLogin")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ToUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ToUserName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("followers", (string)null);
                 });
 #pragma warning restore 612, 618
         }

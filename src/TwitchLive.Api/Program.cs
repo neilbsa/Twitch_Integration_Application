@@ -1,3 +1,4 @@
+using JasperFx.CodeGeneration.Model;
 using TwitchLive.Application;
 using TwitchLive.Infrastructure;
 using Wolverine;
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.UseWolverine(opts =>
 {
         AppLayer.ConfigureWolverine(opts);
+        opts.ServiceLocationPolicy = ServiceLocationPolicy.AlwaysAllowed;
         opts.UseRuntimeCompilation();
 });
 

@@ -1,10 +1,46 @@
-using JasperFx.Events.Documents;
-using MassTransit.NewIdFormatters;
+
 using TwitchLive.Domain.Channels;
 using TwitchLive.Domain.Channels.Properties;
 using TwitchLive.Domain.Channels.Repository;
-
+using Microsoft.EntityFrameworkCore;
+using TwitchLive.Domain.Followers.Repository;
+using TwitchLive.Domain.Followers;
+using TwitchLive.Domain.Followers.Properties;
+using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
 namespace TwitchLive.Infrastructure.Repository;
+
+
+
+
+public sealed class FollowerRepository : IFollowerRepository
+{
+
+
+
+    private readonly ApplicationDbContext _context;
+    public FollowerRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public void Add(Follower follower)
+    {
+        _context.Set<Follower>().Add(follower);
+    }
+
+    public async Task<Follower?> GetFollowerByIdAsync(Guid id)
+    {
+        return await _context.Set<Follower>().FindAsync(id);
+    }
+
+    public async Task<bool> IsFollowerAlreadyExist(FromUserId fromUserId, ToUserId toUserId)
+    {
+        return await _context.Set<Follower>().AnyAsync(z=>z.FromUserId == fromUserId && z.ToUserId == toUserId);
+    }
+}
+
+
+
 
 
 public sealed class ChannelRepository : IChannelRepository

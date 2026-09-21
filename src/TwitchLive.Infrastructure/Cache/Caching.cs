@@ -2,10 +2,10 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace TwitchLive.Infrastructure.Cache;
 
-public sealed class TwitchLiveDataCache : ITwitchLiveDataCache
+public sealed class Caching : ICaching
 {
     private readonly IMemoryCache _memoryCache;
-    public TwitchLiveDataCache(IMemoryCache memoryCache)
+    public Caching(IMemoryCache memoryCache)
     {
         _memoryCache = memoryCache;
     }

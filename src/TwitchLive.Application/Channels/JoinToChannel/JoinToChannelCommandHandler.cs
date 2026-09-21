@@ -40,8 +40,9 @@ public sealed class JoinToChannelCommandHandler
             if(channelDetail?.Status != Domain.Channels.Properties.ChannelStatus.Live)
                 return Result.Failure(ChannelErrors.ChannelNotOnline);
 
-            
+            _twitchManager.JoinChannel(command.Channellogin);
             channelDetail.JoinChannel();
+            
             await _unitOfWork.SaveChangesAsync(token);
             return Result.Success();
         }

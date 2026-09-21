@@ -2,7 +2,11 @@
    <ItemGroup>
   
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+  
+    <PackageReference Include="Microsoft.Extensions.Resilience" />
     <PackageReference Include="TwitchLib" />
+    <PackageReference Include="TwitchLib.Api" />
+    <PackageReference Include="TwitchLib.EventSub.Websockets" />
     <PackageReference Include="WolverineFx.RuntimeCompilation" />
   </ItemGroup>
 

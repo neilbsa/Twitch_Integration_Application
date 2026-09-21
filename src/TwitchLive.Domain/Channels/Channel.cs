@@ -13,7 +13,7 @@ public sealed class Channel :Entity
         Guid id, UserTwitchId userTwitchId, UserTwitchLogin login, UserTwitchDisplayName displayName, DateTime createdAt,
         UserTwitchType type, UserTwitchBroadcasterType broadcasterType, UserTwitchDescription description,
         UserTwitchProfileImageUrl profileImageUrl, UserTwitchOfflineImageUrl offlineImageUrl, long viewCount,
-        UserTwitchEmail email, ChannelStatus status) : base(id)
+        UserTwitchEmail email, ChannelStatus status, bool isModerated) : base(id)
     {
         UserTwitchId = userTwitchId;
         Login = login;
@@ -27,6 +27,7 @@ public sealed class Channel :Entity
         ViewCount = viewCount;
         Email = email;
         Status = status;
+        IsModerated = isModerated;
     }
 
     public UserTwitchId UserTwitchId { get; private set; }
@@ -39,9 +40,11 @@ public sealed class Channel :Entity
     public UserTwitchProfileImageUrl ProfileImageUrl { get; private set; }
     public UserTwitchOfflineImageUrl OfflineImageUrl { get; private set; }
     public long ViewCount { get; private set; }
-    public UserTwitchEmail Email { get; private set; }
+    public UserTwitchEmail? Email { get; private set; }
     public ChannelStatus Status { get; private set; }
     public JoinStatus JoinStatus { get; private set; }
+    public bool IsModerated { get; private set; }   
+    public int Version { get; private set; } 
     public static Channel Create(
         UserTwitchId userTwitchId,
         UserTwitchLogin login,
@@ -54,7 +57,7 @@ public sealed class Channel :Entity
         UserTwitchOfflineImageUrl offlineImageUrl,
         long viewCount,
         UserTwitchEmail email,
-        ChannelStatus status)
+        ChannelStatus status,bool _isModerated)
     {
         var channel = new Channel(
             Guid.NewGuid(),
@@ -69,7 +72,7 @@ public sealed class Channel :Entity
             offlineImageUrl,
             viewCount,
             email,
-            status);
+            status,_isModerated);
         channel.RaiseDomainEvent(new ChannelCreatedDomainEvent(channel));
         return channel;
     }
@@ -93,6 +96,11 @@ public sealed class Channel :Entity
         return Result.Success();
     }
 
+
+    public void SetToModerated(bool isModerated)
+    {
+       IsModerated=isModerated;
+    }
 
     public void SetChannelStatus(ChannelStatus status)
     {

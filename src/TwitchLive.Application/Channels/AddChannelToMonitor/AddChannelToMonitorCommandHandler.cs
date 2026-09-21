@@ -38,10 +38,10 @@ public sealed class AddChannelToMonitorCommandHandler
         {
             return Result.Failure(ChannelErrors.TwitchChannelNotValid);
         }
-
+        channelDetail.SetToModerated(command.isModerated);
         _channelRepository.Add(channelDetail);
         await _unitOfWork.SaveChangesAsync(token);
-        await _twitchManager.AddChannelToMonitor(channelDetail.Login);
+
 
         return Result.Success();
 
