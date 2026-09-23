@@ -3,11 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TwitchLive.Domain.Abstractions.UnitOfWork;
 using TwitchLive.Domain.Channels.Repository;
-using TwitchLive.Domain.TwitchManager;
 using TwitchLive.Infrastructure.Cache;
 using TwitchLive.Infrastructure.Repository;
 using TwitchLive.Infrastructure.TwitchManagerSettings;
-using Microsoft.Extensions.Resilience;
 using Polly;
 using Polly.Retry;
 using TwitchLive.Infrastructure.BackgroundServices;
@@ -42,7 +40,7 @@ public static class DependencyInjection
         services.AddScoped<IChannelRepository,ChannelRepository>();
           services.AddScoped<IFollowerRepository,FollowerRepository>();
         services.AddSingleton<ICaching,Caching>();
-        services.AddScoped<ITwitchManager,TwitchManager>();
+ 
         services.AddTwitchLibraryConfiguration(builder);
         services.AddHostedService<GetAllTheFollowersOnChannel>();
         return services;

@@ -28,7 +28,7 @@ public sealed class ChatService : IChatService
     private string GenerateChannelKey(UserTwitchLogin login) => $"chat:{login.Value}";
 
     public async Task CreateChatToUser(UserTwitchLogin messageTo, UserTwitchLogin messageFrom, string Message)
-                    {
+    {
         var newMessage = new ChannelMessageDTO(
             messageFrom.Value,
             messageTo.Value,
@@ -48,6 +48,7 @@ public sealed class ChatService : IChatService
                         ? new List<ChannelMessageDTO>()
                         : new List<ChannelMessageDTO>(messages);
 
+
                     updatedMessages.Add(newMessage);
 
                     _logger.LogInformation($"Saving {updatedMessages.Count} messages for channel {channelChatKey}");
@@ -56,8 +57,8 @@ public sealed class ChatService : IChatService
                         channelChatKey,
                         updatedMessages,
                         TimeSpan.FromDays(1));
-                }
             }
+    }
 
     public async Task<List<ChannelMessageDTO>> GetChatsToChannel(UserTwitchLogin messageTo)
     {
@@ -70,7 +71,7 @@ public sealed class ChatService : IChatService
         return messages ?? new List<ChannelMessageDTO>();
     }
 
-    public async Task SendThanksToFollowerChatAsync(FromUserId fromUserId, FromLogin fromLogin, ToUserId toUserId)
+    public async Task SendMessageToChat(FromUserId fromUserId, FromLogin fromLogin, ToUserId toUserId,string message)
     {
         try
         {
@@ -80,7 +81,7 @@ public sealed class ChatService : IChatService
             {
                 BroadcasterId = toUserId.Value,
                 SenderId = "1535275845",
-                Message = $"Thanks for the follow {fromLogin.Value}"
+                Message = message
             };
 
             await _api.Helix.Chat.SendChatMessage(newMessage);
@@ -93,7 +94,7 @@ public sealed class ChatService : IChatService
         }
         finally
         {
-            await Task.Delay(5000);
+            await Task.Delay(2000);
             _rateLimitLock.Release();
         }
     }

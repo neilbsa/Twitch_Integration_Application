@@ -24,14 +24,14 @@ public sealed class SendRecognitionToFollowerCommandHandler
 
         try
         {
-             await _chatService.SendThanksToFollowerChatAsync(command.fromUserId,command.userName, command.toUserId);
+             await _chatService.SendMessageToChat(command.fromUserId,command.userName, command.toUserId,$"Thanks for the follow {command.userName}");
              return Result.Success();
-        }catch
+        }
+        catch
         {
             return Result.Failure(new Error("Sending Welcome chat error","SendRecognitionToFollowerCommandHandler throw an error"));
         }
          
-
     }
 
 

@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using TwitchLib.Api;
 using TwitchLib.Api.Helix.Models.Moderation.GetModeratedChannels;
-using TwitchLive.Application.Channels.AddChannelToMonitor;
 using TwitchLive.Application.Channels.CreateNewChats;
 using TwitchLive.Application.Channels.SetChannelStatus;
 using TwitchLive.Domain.Abstractions.Results;
@@ -20,9 +19,6 @@ public interface ITwitchChannelService
         string userId,
         CancellationToken cancellationToken=default);
 
-    Task RegisterChannelAsync(
-        ModeratedChannel channel,
-        CancellationToken cancellationToken=default);
 
     Task ChangeStatusAsync(
         string login,
@@ -74,19 +70,7 @@ public sealed class TwitchChannelService : ITwitchChannelService
         }while(cursor != null);        
         return channels;
     }
-    public async Task RegisterChannelAsync(ModeratedChannel channel, CancellationToken cancellationToken)
-    {
-        var command = new AddChannelToMonitorCommand(new UserTwitchLogin(channel.BroadcasterLogin),true);
-        var result = await _bus.InvokeAsync<Result>(command);
-        if (result.IsSuccess)
-        {
-            _logger.LogInformation($"adding {channel.BroadcasterLogin} success");
-        }
-        else
-        {
-               _logger.LogError($"adding {channel.BroadcasterLogin} not success: {result.Error}");
-        }
-    }
+   
  
 
 }

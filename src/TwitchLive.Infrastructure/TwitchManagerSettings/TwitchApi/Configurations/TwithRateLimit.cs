@@ -97,11 +97,10 @@ public class TwitchRateLimit : IRateLimiter
             var now = DateTimeOffset.UtcNow;
             var limiter = _limiter.GetRateLimit();
            // Remove requests outside the 1-minute window
-            // while (_requests.Count > 0 &&
-            //        now < limiter.DateRefresh)
-            // {
-            //     _requests.Dequeue();
-            // }
+           while (_requests.Count > 0 && now - _requests.Peek() >= limiter.DateRefresh)
+            {
+                _requests.Dequeue();
+            }
 
             if (_requests.Count >= limiter.MaxRequests)
             {

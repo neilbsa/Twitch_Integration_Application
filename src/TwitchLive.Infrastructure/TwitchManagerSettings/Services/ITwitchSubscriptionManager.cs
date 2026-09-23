@@ -129,10 +129,6 @@ public sealed class TwitchSubscriptionManager : ITwitchSubscriptionManager
             sessionId,
             channel.BroadcasterId);
 
-        await _channelServices.RegisterChannelAsync(
-            channel,
-            cancellationToken);
-
         _logger.LogInformation(
             "Subscribed to Twitch channel {Channel}",
             channel.BroadcasterLogin);

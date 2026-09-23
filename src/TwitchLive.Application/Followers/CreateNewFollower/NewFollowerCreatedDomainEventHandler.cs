@@ -31,14 +31,11 @@ public sealed class NewFollowerCreatedDomainEventHandler
         var followerDetails = await _followerRepository.GetFollowerByIdAsync(@event.id);
         if(followerDetails != null)
         {
-
             var command = new SendRecognitionToFollowerCommand(followerDetails.FromUserId,followerDetails.FromLogin,followerDetails.ToUserId);
-           
             var resultSending = await _bus.InvokeAsync<Result>(command,token);
             if (resultSending.IsSuccess)
             {
                 followerDetails.SetRecognitionStatus(RecognizeStatus.Sent);
-               
                  await _unitOfWork.SaveChangesAsync(token);
             }
             else
@@ -46,10 +43,6 @@ public sealed class NewFollowerCreatedDomainEventHandler
                 _logger.LogError($"Error sending message: {resultSending.Error}");
                  _logger.LogInformation($"error sending {command.toUserId} : { command.fromUserId}");
             }
-
-
-
-            
         }
     }
 }
