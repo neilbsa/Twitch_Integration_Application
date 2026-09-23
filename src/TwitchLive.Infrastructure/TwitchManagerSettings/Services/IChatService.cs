@@ -3,7 +3,9 @@ using Microsoft.Extensions.Logging;
 using TwitchLib.Api;
 using TwitchLib.Api.Helix.Models.Channels.SendChatMessage;
 using TwitchLive.Application.Abstractions.Chats;
+using TwitchLive.Application.Channels.CreateNewChats;
 using TwitchLive.Application.Chats.DTOs;
+using TwitchLive.Domain.Abstractions.Results;
 using TwitchLive.Domain.Channels.Properties;
 using TwitchLive.Domain.Followers.Properties;
 using TwitchLive.Infrastructure.Cache;
@@ -39,23 +41,23 @@ public sealed class ChatService : IChatService
 
         List<ChannelMessageDTO> messages = new List<ChannelMessageDTO>();
         lock (channelLock)
-    {
-            _caching.Get<List<ChannelMessageDTO>>(channelChatKey, out messages);
+            {
+                    _caching.Get<List<ChannelMessageDTO>>(channelChatKey, out messages);
 
-            var updatedMessages = messages == null
-                ? new List<ChannelMessageDTO>()
-                : new List<ChannelMessageDTO>(messages);
+                    var updatedMessages = messages == null
+                        ? new List<ChannelMessageDTO>()
+                        : new List<ChannelMessageDTO>(messages);
 
-            updatedMessages.Add(newMessage);
+                    updatedMessages.Add(newMessage);
 
-            _logger.LogInformation($"Saving {updatedMessages.Count} messages for channel {channelChatKey}");
+                    _logger.LogInformation($"Saving {updatedMessages.Count} messages for channel {channelChatKey}");
 
-            _caching.Set(
-                channelChatKey,
-                updatedMessages,
-                TimeSpan.FromDays(1));
-        }
-    }
+                    _caching.Set(
+                        channelChatKey,
+                        updatedMessages,
+                        TimeSpan.FromDays(1));
+                }
+            }
 
     public async Task<List<ChannelMessageDTO>> GetChatsToChannel(UserTwitchLogin messageTo)
     {
@@ -77,7 +79,7 @@ public sealed class ChatService : IChatService
             var newMessage = new SendChatMessageRequest()
             {
                 BroadcasterId = toUserId.Value,
-                SenderId = fromUserId.Value,
+                SenderId = "1535275845",
                 Message = $"Thanks for the follow {fromLogin.Value}"
             };
 
@@ -95,5 +97,11 @@ public sealed class ChatService : IChatService
             _rateLimitLock.Release();
         }
     }
+
+
+  
+ 
+
+
 }
 

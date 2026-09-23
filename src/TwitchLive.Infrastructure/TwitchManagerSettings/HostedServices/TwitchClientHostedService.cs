@@ -28,34 +28,7 @@ public sealed class TwitchClientHostedService : IHostedService
     {
         _client.OnConnected += ClientConnected;
         _client.OnDisconnected += ClientDisconnected;
-        
-        _client.OnUserJoined += UserJoined;
-        _client.OnUserLeft += UserLeft;
-        _client.OnJoinedChannel += OnJoinedChannel;
-        _client.OnLeftChannel += OnLeftChannel;
     }
-
-    private void OnLeftChannel(object? sender, OnLeftChannelArgs e)
-    {
-             _logger.LogInformation($"Onleft { e.BotUsername } { e.Channel}");
-    }
-
-    private void OnJoinedChannel(object? sender, OnJoinedChannelArgs e)
-    {
-       _logger.LogInformation($"Onjoined { e.BotUsername } { e.Channel}");
-    }
-
-    private void UserLeft(object? sender, OnUserLeftArgs e)
-    {
-        _logger.LogInformation($"{e.Channel}: {e.Username} left");
-    }
-
-    private void UserJoined(object? sender, OnUserJoinedArgs e)
-    {
-        _logger.LogInformation($"{e.Channel}: {e.Username} joined");
-    }
-
-
     private void ClientDisconnected(object? sender, OnDisconnectedEventArgs e)
     {
        _logger.LogInformation("Client disconnected");

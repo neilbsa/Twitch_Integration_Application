@@ -28,12 +28,7 @@ public interface ITwitchChannelService
         string login,
         ChannelStatus status,
         CancellationToken cancellationToken=default);
-        Task StoreChatToChannelAsync(
-            UserTwitchLogin MessageTo,
-            UserTwitchLogin messageFrom,
-            string message,
-            CancellationToken token=default);
-   
+
    
 }
 
@@ -53,7 +48,7 @@ public sealed class TwitchChannelService : ITwitchChannelService
     }
     public async Task ChangeStatusAsync(string login, ChannelStatus status, CancellationToken cancellationToken)
     {
-          var command = new SetChannelStatusCommand(new UserTwitchLogin(login), status);
+        var command = new SetChannelStatusCommand(new UserTwitchLogin(login), status);
         var bus = _bus;
         var commandResult =  await bus.InvokeAsync<Result>(command);
         if (commandResult.IsSuccess)
@@ -92,23 +87,6 @@ public sealed class TwitchChannelService : ITwitchChannelService
                _logger.LogError($"adding {channel.BroadcasterLogin} not success: {result.Error}");
         }
     }
-
-    public async Task StoreChatToChannelAsync(UserTwitchLogin MessageTo, UserTwitchLogin messageFrom, string message, CancellationToken token)
-    {
-       var newCommand = new CreateNewChatCommand(MessageTo,messageFrom,message);
-       var sendingMessageResult=  await _bus.InvokeAsync<Result>(newCommand);
-
-        if (sendingMessageResult.IsFailure)
-        {
-            _logger.LogError($"error sending message: {sendingMessageResult.Error}");
-
-        }
-        else
-        {
-            _logger.LogInformation("message sent");
-        }
-    }
-
  
 
 }

@@ -11,6 +11,5 @@ public class TwitchOptions
     public string ClientId { get; set; } = string.Empty;
     public string AccessToken { get; set; }= string.Empty;
     public string RefreshToken { get; set; } = string.Empty;
-    public RateLimitOptions TwitchRateLimitOptions { get; set; } = new RateLimitOptions();
     public List<string> PriorityChannels { get; set; } = new List<string>();
 }

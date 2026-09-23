@@ -66,16 +66,13 @@ public sealed class TwitchApiHostedService : IHostedService
 
     private void RegisterHandlers()
     {
-        // DO NOT resolve a scoped service here.
-        //
-        // The EventSub client is long-lived, so the handlers
-        // should resolve their scoped dependencies when the
-        // event actually occurs.
+ 
 
         _subs.ChannelChatMessage += ChannelChatMessage;
         _subs.ChannelFollow += ChannelFollow;
         _subs.StreamOnline += StreamOnline;
         _subs.StreamOffline += StreamOffline;
+    
     }
 
     private async Task ChannelChatMessage(

@@ -9,12 +9,13 @@ namespace TwitchLive.Infrastructure.TwitchManagerSettings.TwitchApi.Configuratio
 public sealed class TwitchCustomHttpHandler : IHttpCallHandler
 {
     private readonly HttpClient _httpClient;
-
-    public TwitchCustomHttpHandler(
+    private readonly IRateLimitHandlers _limitHandlers;
+    public TwitchCustomHttpHandler(IRateLimitHandlers limitHandlers,
         HttpClient? httpClient = null)
     {
 
         _httpClient = httpClient ?? new HttpClient();
+        _limitHandlers = limitHandlers;
     }
 
     public async Task<KeyValuePair<int, string>> GeneralRequestAsync(
@@ -156,13 +157,18 @@ public sealed class TwitchCustomHttpHandler : IHttpCallHandler
             remaining.HasValue &&
             reset.HasValue)
         {
+
+            var now = DateTimeOffset.UtcNow;
             var resetTime =
                 DateTimeOffset.FromUnixTimeSeconds(
                     reset.Value);
 
           Console.WriteLine(
-                $"Twitch API: Rate limit reset at {resetTime} UTC  {limit.Value} {remaining.Value} ");
+                $"Twitch API: Rate limit reset at {resetTime} UTC now: {now}  limit: {limit.Value}  remaining:{remaining.Value} ");
 
+
+
+            _limitHandlers.UpdateRateLimit(limit.Value,remaining.Value,now - resetTime);
           
         }
 

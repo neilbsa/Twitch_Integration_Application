@@ -4,9 +4,13 @@ using Microsoft.Extensions.Options;
 using TwitchLib.Api.Helix.Models.Moderation.GetModeratedChannels;
 using TwitchLib.EventSub.Core.EventArgs.Channel;
 using TwitchLib.EventSub.Core.EventArgs.Stream;
+using TwitchLive.Application.Abstractions.Chats;
+using TwitchLive.Application.Channels.CreateNewChats;
+using TwitchLive.Domain.Abstractions.Results;
 using TwitchLive.Domain.Channels.Properties;
 using TwitchLive.Infrastructure.TwitchManagerSettings;
 using TwitchLive.Infrastructure.TwitchManagerSettings.TwitchApi.EventSubs;
+using Wolverine;
 
 public interface ITwitchSubscriptionManager
 {
@@ -21,30 +25,33 @@ public sealed class TwitchSubscriptionManager : ITwitchSubscriptionManager
 
 {
     private readonly ITwitchEventSubService _eventSub;
-
+    private readonly IChatService _chatService;
     private readonly IOptions<TwitchOptions> _options;
     private readonly ILogger<TwitchSubscriptionManager> _logger;
     private readonly ITwitchChannelService _channelServices;
+    private readonly IMessageBus _bus;
     public TwitchSubscriptionManager(
         ITwitchEventSubService eventSub,
         IOptions<TwitchOptions> options,
         ILogger<TwitchSubscriptionManager> logger,
-        ITwitchChannelService channelServices)
+        ITwitchChannelService channelServices,
+        IChatService chatService,
+        IMessageBus bus)
     {
         _eventSub = eventSub;
         _options = options;
         _logger = logger;
         _channelServices = channelServices;
+        _chatService = chatService;
+        _bus = bus;
     }
 
 
     public async Task ChannelOffline(object? sender, StreamOfflineArgs e)
     {
-
         var channelLogin = e.Payload.Event.BroadcasterUserLogin;
         var status = ChannelStatus.Offline;
         await _channelServices.ChangeStatusAsync(channelLogin, status);
-
     }
     public async Task ChannelOnline(object? sender, StreamOnlineArgs e)
     {
@@ -61,16 +68,24 @@ public sealed class TwitchSubscriptionManager : ITwitchSubscriptionManager
     }
     public async Task ChannelChatMessages(object? sender, ChannelChatMessageArgs e)
     {
-        var broadcasterUserName = e.Payload.Event.BroadcasterUserName;
-        var ChatterUsername = e.Payload.Event.ChatterUserName;
+        var broadcasterUserName = new UserTwitchLogin(e.Payload.Event.BroadcasterUserName);
+        var ChatterUsername = new UserTwitchLogin(e.Payload.Event.ChatterUserName);
         var IsSubscriber = e.Payload.Event.IsSubscriber;
         var IsModerator = e.Payload.Event.IsModerator;
         var Message = e.Payload.Event.Message.Text;
+
         _logger.LogInformation($"In Channel {broadcasterUserName} chatter: {ChatterUsername} which is Subscriber: {IsSubscriber} and moderator: {IsModerator} says: {Message}");
-   
-        await _channelServices.StoreChatToChannelAsync(new UserTwitchLogin(broadcasterUserName),new UserTwitchLogin(ChatterUsername),Message);
-   
-   
+    
+       var newCommand = new CreateNewChatCommand(broadcasterUserName,ChatterUsername,Message);
+       var sendingMessageResult=  await _bus.InvokeAsync<Result>(newCommand);
+        if (sendingMessageResult.IsFailure)
+        {
+            _logger.LogError($"error sending message: {sendingMessageResult.Error}");
+        }
+        else
+        {
+            _logger.LogInformation("message sent");
+        }
     }
 
     public async Task SubscribeAsync(

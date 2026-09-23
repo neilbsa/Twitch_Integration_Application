@@ -37,10 +37,9 @@ public static class TwitchLibDependencyInjections
                         "BotId is required");
 
 
-        services.AddSingleton<IRateLimiter,TwitchRateLimit>();             
+        services.AddSingleton<IRateLimiter,TwitchRateLimit>();  
+        services.AddSingleton<IRateLimitHandlers,RateLimitHandlers>();           
         services.AddSingleton<IHttpCallHandler,TwitchCustomHttpHandler>();          
-
-    
         services.AddSingleton<TwitchClient>(sp =>
         {
             var options = sp.GetRequiredService<IOptions<TwitchOptions>>().Value;
@@ -50,7 +49,6 @@ public static class TwitchLibDependencyInjections
          
             return client;
         });
-
         services.AddSingleton<TwitchAPI>(sp =>
         {
             var options = sp.GetRequiredService<IOptions<TwitchOptions>>().Value;

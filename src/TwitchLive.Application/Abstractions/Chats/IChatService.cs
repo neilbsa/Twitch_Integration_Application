@@ -8,6 +8,6 @@ public interface IChatService
 {
      Task CreateChatToUser(UserTwitchLogin messageTo,UserTwitchLogin messageFrom, string Message);
      Task <List<ChannelMessageDTO>> GetChatsToChannel(UserTwitchLogin messageTo);
-
      Task SendThanksToFollowerChatAsync(FromUserId fromUserId,FromLogin fromLogin, ToUserId toUserId);
+   
 }

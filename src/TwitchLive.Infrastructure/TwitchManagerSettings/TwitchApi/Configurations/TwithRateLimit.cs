@@ -3,22 +3,29 @@ using TwitchLib.Api.Core.Interfaces;
 using TwitchLive.Infrastructure.TwitchManagerSettings;
 
 namespace TwitchLive.Infrastructure.TwitchManagerSettings.TwitchApi.Configurations;
+
+
+
+
 public class TwitchRateLimit : IRateLimiter
 {
-    private readonly int MaxRequests = 500;
+    // private readonly int MaxRequests = 500;
 
-    private readonly TimeSpan _interval = TimeSpan.FromMinutes(.4);
+    // private readonly TimeSpan _interval = TimeSpan.FromMinutes(.4);
 
+    private readonly IRateLimitHandlers _limiter;
     private readonly SemaphoreSlim _lock = new(1, 1);
 
     private readonly Queue<DateTimeOffset> _requests = new();
 
-    public TwitchRateLimit(IOptions<TwitchOptions> options)
+    public TwitchRateLimit(IRateLimitHandlers limiter)
     {
-        var rateLimitOptions = options.Value.TwitchRateLimitOptions;
-        MaxRequests = rateLimitOptions.MaxRequests;
-        _interval = rateLimitOptions.Interval;
+        _limiter = limiter;
     }
+
+
+
+
     public async Task Perform(
         Func<Task> perform,
         CancellationToken cancellationToken)
@@ -88,22 +95,22 @@ public class TwitchRateLimit : IRateLimiter
         try
         {
             var now = DateTimeOffset.UtcNow;
+            var limiter = _limiter.GetRateLimit();
+           // Remove requests outside the 1-minute window
+            // while (_requests.Count > 0 &&
+            //        now < limiter.DateRefresh)
+            // {
+            //     _requests.Dequeue();
+            // }
 
-            // Remove requests outside the 1-minute window
-            while (_requests.Count > 0 &&
-                   now - _requests.Peek() >= _interval)
-            {
-                _requests.Dequeue();
-            }
-
-            if (_requests.Count >= MaxRequests)
+            if (_requests.Count >= limiter.MaxRequests)
             {
 
                 Console.WriteLine("Rate limit reached. Waiting for the next available slot...");
                 var oldestRequest = _requests.Peek();
 
                 var waitTime =
-                    _interval - (now - oldestRequest);
+                    (limiter.DateRefresh - (now - oldestRequest));
 
                 if (waitTime > TimeSpan.Zero)
                 {
@@ -126,7 +133,7 @@ public class TwitchRateLimit : IRateLimiter
                     now = DateTimeOffset.UtcNow;
 
                     while (_requests.Count > 0 &&
-                           now - _requests.Peek() >= _interval)
+                           now - _requests.Peek() >= limiter.DateRefresh)
                     {
                         _requests.Dequeue();
                     }
