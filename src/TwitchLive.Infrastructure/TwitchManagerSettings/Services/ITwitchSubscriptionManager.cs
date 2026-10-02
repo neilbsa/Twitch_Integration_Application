@@ -68,15 +68,27 @@ public sealed class TwitchSubscriptionManager : ITwitchSubscriptionManager
     }
     public async Task ChannelChatMessages(object? sender, ChannelChatMessageArgs e)
     {
-        var broadcasterUserName = new UserTwitchLogin(e.Payload.Event.BroadcasterUserName);
-        var ChatterUsername = new UserTwitchLogin(e.Payload.Event.ChatterUserName);
+        var broadcasterUserName = new UserTwitchDisplayName(e.Payload.Event.BroadcasterUserName);
+        var broadCasterId = new UserTwitchId(e.Payload.Event.BroadcasterUserId);
+        var broadCasterLogin = new UserTwitchLogin(e.Payload.Event.BroadcasterUserLogin);
+
+        var ChatterLogin = new UserTwitchLogin(e.Payload.Event.ChatterUserLogin);
+        var ChatterId = new UserTwitchId(e.Payload.Event.ChatterUserId);
+        var ChatterUsername = new UserTwitchDisplayName(e.Payload.Event.ChatterUserName);
+
+
+         var Message = e.Payload.Event.Message.Text;
+         var MessageId = e.Payload.Event.MessageId;
+        var messageType = e.Payload.Event.MessageType;
+         var sourceMessageId = e.Payload.Event.SourceMessageId;
+        _logger.LogInformation($"message: {Message}: ID: {MessageId} Type: {messageType} source: {sourceMessageId}");
+    
         var IsSubscriber = e.Payload.Event.IsSubscriber;
         var IsModerator = e.Payload.Event.IsModerator;
-        var Message = e.Payload.Event.Message.Text;
-
+     
         _logger.LogInformation($"In Channel {broadcasterUserName} chatter: {ChatterUsername} which is Subscriber: {IsSubscriber} and moderator: {IsModerator} says: {Message}");
     
-       var newCommand = new CreateNewChatCommand(broadcasterUserName,ChatterUsername,Message);
+       var newCommand = new CreateNewChatCommand(broadCasterLogin,ChatterLogin,Message);
        var sendingMessageResult=  await _bus.InvokeAsync<Result>(newCommand);
         if (sendingMessageResult.IsFailure)
         {

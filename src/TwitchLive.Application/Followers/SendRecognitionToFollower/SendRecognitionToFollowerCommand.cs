@@ -24,7 +24,7 @@ public sealed class SendRecognitionToFollowerCommandHandler
 
         try
         {
-             await _chatService.SendMessageToChat(command.fromUserId,command.userName, command.toUserId,$"Thanks for the follow {command.userName}");
+             await _chatService.SendMessageToChat(command.fromUserId,command.userName, command.toUserId,$"Thanks for the follow {command.userName.Value}");
              return Result.Success();
         }
         catch
